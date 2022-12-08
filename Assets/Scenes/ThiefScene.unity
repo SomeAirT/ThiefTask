@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 487789176}
   - component: {fileID: 487789175}
   - component: {fileID: 487789177}
+  - component: {fileID: 487789178}
   m_Layer: 0
   m_Name: HouseSirena
   m_TagString: Untagged
@@ -277,8 +278,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 451adb144be03c940a8d9eb80f51fdea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sirenaAudioSource: {fileID: 487789176}
-  changeVolumeSpeed: 0.2
+  _enterInHouseTrigger: {fileID: 487789178}
+  _sirenaAudioSource: {fileID: 487789176}
+  _changeVolumeSpeed: 1
+--- !u!114 &487789178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487789173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c75235973039af84a981d7579955e911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1320619673
 GameObject:
   m_ObjectHideFlags: 0

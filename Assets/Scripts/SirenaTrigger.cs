@@ -4,21 +4,31 @@ using UnityEngine;
 
 public class SirenaTrigger : MonoBehaviour
 {
-    [SerializeField] private AudioSource sirenaAudioSource;
-    [SerializeField] private float changeVolumeSpeed = 1f;
+    [SerializeField] private EnterInHouseTrigger _enterInHouseTrigger;
+    [SerializeField] private AudioSource _sirenaAudioSource;
+    [SerializeField] private float _changeVolumeSpeed = 1f;
 
     private bool _isActivateSirena = false;
     private Coroutine _changeAudioVolumeCoroutine;
 
-    private float minAudioVolume = 0f;
-    private float maxAudioVolume = 1f;
+    private float _minAudioVolume = 0f;
+    private float _maxAudioVolume = 1f;
 
     private void Start()
     {
-        sirenaAudioSource.volume = minAudioVolume;
+        _sirenaAudioSource.volume = _minAudioVolume;
+
+        _enterInHouseTrigger.OnHouseEnter += OnHouseEnter;
+        _enterInHouseTrigger.OnHouseExit += OnHouseExit;
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnDestroy()
+    {
+        _enterInHouseTrigger.OnHouseEnter -= OnHouseEnter;
+        _enterInHouseTrigger.OnHouseExit -= OnHouseExit;
+    }
+
+    private void OnHouseEnter(Collider other)
     {
         if (_isActivateSirena == false && other.tag.Contains(GameTags.Player))
         {
@@ -26,7 +36,7 @@ public class SirenaTrigger : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnHouseExit(Collider other)
     {
         if (_isActivateSirena && other.tag.Contains(GameTags.Player))
         {
@@ -39,7 +49,7 @@ public class SirenaTrigger : MonoBehaviour
         _isActivateSirena = true;
 
         StopChangeAudioVolumeCoroutine();
-        _changeAudioVolumeCoroutine = StartCoroutine(ChangeAudioVolumeCoroutine(maxAudioVolume));
+        _changeAudioVolumeCoroutine = StartCoroutine(ChangeAudioVolumeCoroutine(_maxAudioVolume));
     }
 
     private void StopSirena()
@@ -47,7 +57,7 @@ public class SirenaTrigger : MonoBehaviour
         _isActivateSirena = false;
 
         StopChangeAudioVolumeCoroutine();
-        _changeAudioVolumeCoroutine = StartCoroutine(ChangeAudioVolumeCoroutine(minAudioVolume));
+        _changeAudioVolumeCoroutine = StartCoroutine(ChangeAudioVolumeCoroutine(_minAudioVolume));
     }
 
     private void StopChangeAudioVolumeCoroutine()
@@ -61,24 +71,24 @@ public class SirenaTrigger : MonoBehaviour
 
     private IEnumerator ChangeAudioVolumeCoroutine(float targetVolume)
     {
-        if (sirenaAudioSource.isPlaying == false)
+        if (_sirenaAudioSource.isPlaying == false)
         {
-            sirenaAudioSource.Play();
+            _sirenaAudioSource.Play();
         }
 
         float volumeEpsilon = 0.01f;
 
-        while (Mathf.Abs(sirenaAudioSource.volume - targetVolume) > volumeEpsilon)
+        while (Mathf.Abs(_sirenaAudioSource.volume - targetVolume) > volumeEpsilon)
         {            
             yield return null;
-            sirenaAudioSource.volume = Mathf.MoveTowards(sirenaAudioSource.volume, targetVolume, changeVolumeSpeed * Time.deltaTime);
+            _sirenaAudioSource.volume = Mathf.MoveTowards(_sirenaAudioSource.volume, targetVolume, _changeVolumeSpeed * Time.deltaTime);
         }
 
-        sirenaAudioSource.volume = targetVolume;
+        _sirenaAudioSource.volume = targetVolume;
 
-        if (sirenaAudioSource.isPlaying && Mathf.Approximately(minAudioVolume, targetVolume))
+        if (_sirenaAudioSource.isPlaying && Mathf.Approximately(_minAudioVolume, targetVolume))
         {
-            sirenaAudioSource.Stop();
+            _sirenaAudioSource.Stop();
         }
     }
 
