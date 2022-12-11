@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SirenaTrigger : MonoBehaviour
@@ -28,24 +27,23 @@ public class SirenaTrigger : MonoBehaviour
         _enterInHouseTrigger.OnHouseExit -= OnHouseExit;
     }
 
-    private void OnHouseEnter(Collider other)
-    {
-        if (_isActivateSirena == false && other.tag.Contains(GameTags.Player))
-        {
-            StartSirena();
-        }
+    private void OnHouseEnter(Player player)
+    {        
+        StartSirena();        
     }
 
-    private void OnHouseExit(Collider other)
-    {
-        if (_isActivateSirena && other.tag.Contains(GameTags.Player))
-        {
-            StopSirena();
-        }
+    private void OnHouseExit(Player player)
+    {  
+        StopSirena();        
     }
 
     private void StartSirena()
     {
+        if (_isActivateSirena)
+        {
+            return;
+        }
+        
         _isActivateSirena = true;
 
         StopChangeAudioVolumeCoroutine();
@@ -54,6 +52,11 @@ public class SirenaTrigger : MonoBehaviour
 
     private void StopSirena()
     {
+        if (_isActivateSirena == false)
+        {
+            return;
+        }
+
         _isActivateSirena = false;
 
         StopChangeAudioVolumeCoroutine();
@@ -91,6 +94,4 @@ public class SirenaTrigger : MonoBehaviour
             _sirenaAudioSource.Stop();
         }
     }
-
-
 }

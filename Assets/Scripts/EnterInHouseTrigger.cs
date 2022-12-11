@@ -1,20 +1,24 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnterInHouseTrigger : MonoBehaviour
 {
-    public event Action<Collider> OnHouseEnter;
-    public event Action<Collider> OnHouseExit;
+    public event Action<Player> OnHouseEnter;
+    public event Action<Player> OnHouseExit;
 
     private void OnTriggerEnter(Collider other)
     {
-        OnHouseEnter?.Invoke(other);
+        if (other.TryGetComponent<Player>(out var player))
+        {
+            OnHouseEnter?.Invoke(player);
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        OnHouseExit?.Invoke(other);
+        if (other.TryGetComponent<Player>(out var player))
+        {
+            OnHouseExit?.Invoke(player);
+        }
     }
 }
