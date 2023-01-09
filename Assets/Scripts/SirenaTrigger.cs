@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class SirenaTrigger : MonoBehaviour
 {
-    [SerializeField] private EnterInHouseTrigger _enterInHouseTrigger;
+    [SerializeField] private HouseEnterDetector _houseEnterTrigger;
+    [SerializeField] private HouseExitDetector _houseExitTrigger;
     [SerializeField] private AudioSource _sirenaAudioSource;
     [SerializeField] private float _changeVolumeSpeed = 1f;
 
@@ -17,27 +18,17 @@ public class SirenaTrigger : MonoBehaviour
     {
         _sirenaAudioSource.volume = _minAudioVolume;
 
-        _enterInHouseTrigger.OnHouseEnter += OnHouseEnter;
-        _enterInHouseTrigger.OnHouseExit += OnHouseExit;
+        _houseEnterTrigger.HouseEnter += StartSirena;
+        _houseExitTrigger.HouseExit += StopSirena;
     }
 
     private void OnDestroy()
     {
-        _enterInHouseTrigger.OnHouseEnter -= OnHouseEnter;
-        _enterInHouseTrigger.OnHouseExit -= OnHouseExit;
-    }
+        _houseEnterTrigger.HouseEnter -= StartSirena;
+        _houseExitTrigger.HouseExit -= StopSirena;
+    }    
 
-    private void OnHouseEnter(Player player)
-    {        
-        StartSirena();        
-    }
-
-    private void OnHouseExit(Player player)
-    {  
-        StopSirena();        
-    }
-
-    private void StartSirena()
+    private void StartSirena(Player player)
     {
         if (_isActivateSirena)
         {
@@ -50,7 +41,7 @@ public class SirenaTrigger : MonoBehaviour
         _changeAudioVolumeCoroutine = StartCoroutine(ChangeAudioVolumeCoroutine(_maxAudioVolume));
     }
 
-    private void StopSirena()
+    private void StopSirena(Player player)
     {
         if (_isActivateSirena == false)
         {
@@ -77,11 +68,9 @@ public class SirenaTrigger : MonoBehaviour
         if (_sirenaAudioSource.isPlaying == false)
         {
             _sirenaAudioSource.Play();
-        }
+        }        
 
-        float volumeEpsilon = 0.01f;
-
-        while (Mathf.Abs(_sirenaAudioSource.volume - targetVolume) > volumeEpsilon)
+        while (_sirenaAudioSource.volume != targetVolume)
         {            
             yield return null;
             _sirenaAudioSource.volume = Mathf.MoveTowards(_sirenaAudioSource.volume, targetVolume, _changeVolumeSpeed * Time.deltaTime);
