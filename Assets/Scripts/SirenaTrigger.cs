@@ -18,17 +18,17 @@ public class SirenaTrigger : MonoBehaviour
     {
         _sirenaAudioSource.volume = _minAudioVolume;
 
-        _houseEnterTrigger.HouseEnter += StartSirena;
-        _houseExitTrigger.HouseExit += StopSirena;
+        _houseEnterTrigger.HouseEnter += OnHouseEnter;
+        _houseExitTrigger.HouseExit += OnHouseExit;
     }
 
     private void OnDestroy()
     {
-        _houseEnterTrigger.HouseEnter -= StartSirena;
-        _houseExitTrigger.HouseExit -= StopSirena;
+        _houseEnterTrigger.HouseEnter -= OnHouseEnter;
+        _houseExitTrigger.HouseExit -= OnHouseExit;
     }    
 
-    private void StartSirena(Player player)
+    private void OnHouseEnter(Player player)
     {
         if (_isActivateSirena)
         {
@@ -36,12 +36,10 @@ public class SirenaTrigger : MonoBehaviour
         }
         
         _isActivateSirena = true;
-
-        StopChangeAudioVolumeCoroutine();
-        _changeAudioVolumeCoroutine = StartCoroutine(ChangeAudioVolumeCoroutine(_maxAudioVolume));
+        ChangeAudioVolume(_maxAudioVolume);
     }
 
-    private void StopSirena(Player player)
+    private void OnHouseExit(Player player)
     {
         if (_isActivateSirena == false)
         {
@@ -49,9 +47,13 @@ public class SirenaTrigger : MonoBehaviour
         }
 
         _isActivateSirena = false;
+        ChangeAudioVolume(_minAudioVolume);
+    }
 
+    private void ChangeAudioVolume(float targetAudioVolume)
+    {
         StopChangeAudioVolumeCoroutine();
-        _changeAudioVolumeCoroutine = StartCoroutine(ChangeAudioVolumeCoroutine(_minAudioVolume));
+        _changeAudioVolumeCoroutine = StartCoroutine(ChangeAudioVolumeCoroutine(targetAudioVolume));
     }
 
     private void StopChangeAudioVolumeCoroutine()
